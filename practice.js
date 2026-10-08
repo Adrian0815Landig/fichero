@@ -41,7 +41,8 @@
     const q = P.queue[P.i], c = q.c, es2en = q.dir === 'es-en';
     const front = es2en ? c.es : c.en, back = es2en ? c.en : c.es;
     const lang = es2en ? 'Español' : 'English';
-    const ex = c.example_es ? '<div class="ex">' + F.esc(c.example_es) + (c.example_en ? '<br><small>' + F.esc(c.example_en) + '</small>' : '') + '</div>' : '';
+    const exs = F.examplesOf(c);
+    const ex = exs.length ? '<ol class="exs">' + exs.map(e => '<li>' + F.esc(e.es) + (e.en ? '<small>' + F.esc(e.en) + '</small>' : '') + '</li>').join('') + '</ol>' : '';
     const note = c.grammarNote ? '<div class="ex"><b>' + F.esc(c.grammarNote) + '</b></div>' : '';
     if (F.prefs.mode === 'flip') {
       st.innerHTML = '<div class="deck"><div class="card" id="card" tabindex="0" role="button" aria-label="Voltear tarjeta">' +

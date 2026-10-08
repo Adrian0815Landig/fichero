@@ -78,6 +78,18 @@ input,textarea,select{font:inherit;color:var(--ink)}
 .recent{margin-top:22px}.recent h2,.sect{font-size:15px;font-weight:700;margin:0 0 8px}
 .mini{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 2px;border-bottom:1px solid var(--line);width:100%;text-align:left}
 .mini b{font-family:var(--display);font-size:17px}.mini span{color:var(--ink-2);font-size:14px}
+/* meanings + examples */
+.exs{list-style:none;margin-top:14px;display:flex;flex-direction:column;gap:10px}
+.exs li{padding-left:12px;border-left:3px solid var(--saffron);font-size:15px;line-height:1.45;text-align:left}
+.exs small{display:block;color:var(--ink-2);font-size:13.5px;margin-top:2px}
+.senses-h{font-size:12.5px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.04em;margin:16px 0 8px}
+.sense{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;padding:11px 12px;border-radius:var(--r-md);border:1.5px solid var(--line);background:var(--surface);margin-bottom:8px}
+.sense .n{flex:none;width:24px;height:24px;border-radius:50%;background:var(--surface-2);color:var(--ink-2);font-size:12.5px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.sense .sx{flex:1;min-width:0}.sense b{font-size:16px;color:var(--ink)}.sense i{color:var(--ink-2);font-size:14px}
+.sense small{display:block;font-size:13px;color:var(--ink-3);margin-top:2px}
+.sense.on{border-color:var(--blue);background:var(--blue-soft)}.sense.on .n{background:var(--blue);color:var(--blue-ink)}
+.sense + .exs{margin:4px 0 14px 6px}
+.card .exs{width:100%;color:var(--ink-2)}
 /* practice */
 .stats{display:flex;gap:10px;margin-bottom:14px}
 .stat{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:11px 12px}
@@ -85,7 +97,7 @@ input,textarea,select{font:inherit;color:var(--ink)}
 .bar{height:6px;border-radius:3px;background:var(--surface-2);overflow:hidden;margin:14px 0 4px}.bar i{display:block;height:100%;background:var(--blue);border-radius:3px;transition:width .3s}
 .stage{position:relative;margin-top:14px;touch-action:pan-y}
 .deck{position:relative;min-height:300px}
-.card{position:relative;min-height:300px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:26px 22px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;user-select:none;-webkit-user-select:none;
+.card{position:relative;min-height:300px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:26px 22px 36px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;user-select:none;-webkit-user-select:none;
   box-shadow:0 10px 30px -14px rgba(20,40,110,.35);transition:transform .22s ease,background .15s;will-change:transform}
 .card.drag{transition:none}
 .card.go-good{background:var(--good-soft)}.card.go-bad{background:var(--bad-soft)}
@@ -104,8 +116,12 @@ input,textarea,select{font:inherit;color:var(--ink)}
 .verdict{margin-top:14px;font-size:16px;font-weight:700}.verdict.ok{color:var(--good)}.verdict.no{color:var(--bad)}
 .done{text-align:center;padding:50px 10px}.done h2{font-family:var(--display);font-size:28px;margin-bottom:8px}
 /* list */
-.row-item{display:flex;align-items:center;gap:12px;padding:13px 14px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);margin-bottom:8px}
-.row-item .t{flex:1;min-width:0}.row-item b{font-family:var(--display);font-size:18px;display:block;overflow:hidden;text-overflow:ellipsis}
+.row-item{padding:13px 14px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);margin-bottom:8px}
+.row-item .row-top{display:flex;align-items:center;gap:12px}
+.row-item .t{flex:1;min-width:0;text-align:left}
+.row-item.open{border-color:var(--blue)}
+.row-item .sense b{font-family:var(--text);font-size:16px;display:inline}
+.row-item .detail{margin-top:4px}.row-item .detail .senses-h{margin-top:10px}.row-item b{font-family:var(--display);font-size:18px;display:block;overflow:hidden;text-overflow:ellipsis}
 .row-item .e{font-size:14px;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .row-item .lvl{font-size:12px;font-weight:700;color:var(--ink-3);white-space:nowrap}
 .row-item .del{color:var(--bad);width:38px;height:38px;border-radius:50%}

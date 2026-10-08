@@ -15,11 +15,15 @@ window.F = window.F || {};
   F.prefs = Object.assign({ theme: 'auto', mode: 'flip', dir: 'es-en', lookup: 'es-en' }, read(K.prefs, {}));
   F.savePrefs = () => write(K.prefs, F.prefs);
 
+  const cleanSense = (s) => ({ es: String(s.es || '').trim(), en: String(s.en || '').trim(), pos: s.pos || '', note: s.note || '',
+    examples: (Array.isArray(s.examples) ? s.examples : []).filter(e => e && e.es).map(e => ({ es: String(e.es).trim(), en: String(e.en || '').trim() })).slice(0, 3) });
+  const cleanSenses = (l) => (Array.isArray(l) ? l : []).filter(s => s && s.en).map(cleanSense).slice(0, 6);
   const clean = (c) => ({
     id: c.id || ('v' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6)),
     es: String(c.es || '').trim(), en: String(c.en || '').trim(),
     pos: c.pos || '', example_es: c.example_es || '', example_en: c.example_en || '',
     grammarNote: c.grammarNote || '', tag: c.tag || '',
+    senses: cleanSenses(c.senses), sense: Math.max(0, Math.min(parseInt(c.sense, 10) || 0, cleanSenses(c.senses).length - 1)),
     box: Math.min(Math.max(parseInt(c.box, 10) || 1, 1), F.MAXBOX),
     nextReview: Number.isFinite(c.nextReview) ? c.nextReview : Date.now(),
     createdAt: Number.isFinite(c.createdAt) ? c.createdAt : Date.now(),
@@ -36,6 +40,28 @@ window.F = window.F || {};
 
   F.add = (c) => { if (!c.es || !c.en) return null; if (F.hasEs(c.es)) return null; const n = clean(c); F.cards.push(n); F.persist(); return n; };
   F.remove = (id) => { F.cards = F.cards.filter(c => c.id !== id); F.persist(); };
+  // Meanings: a card keeps every sense from its lookup; `sense` is the one being learned and en/pos/example_* mirror it.
+  F.examplesOf = (c) => { const s = c.senses && c.senses[c.sense]; if (s && s.examples.length) return s.examples; return c.example_es ? [{ es: c.example_es, en: c.example_en }] : []; };
+  F.setSense = (c, i) => {
+    const s = c.senses[i]; if (!s) return false;
+    if (s.es && F.norm(s.es) !== F.norm(c.es)) { const o = F.hasEs(s.es); if (o && o !== c) return false; c.es = s.es; }
+    c.sense = i; c.en = s.en; if (s.pos) c.pos = s.pos;
+    const e = s.examples[0]; c.example_es = e ? e.es : ''; c.example_en = e ? e.en : '';
+    F.persist(); return true;
+  };
+  F.fromLookup = (r, i, extra) => { const s = r.senses[i] || r.senses[0], e = s.examples[0];
+    return Object.assign({ es: s.es || r.spanish, en: s.en, pos: s.pos || r.partOfSpeech, example_es: e ? e.es : '', example_en: e ? e.en : '', grammarNote: r.grammarNote, senses: r.senses, sense: r.senses.indexOf(s) }, extra || {}); };
+  // Give an existing card the senses of a lookup. Picks sense i, or the one matching the card's current translation
+  // (keeping the card's own translation as an extra option if none matches).
+  F.attachSenses = (c, r, i) => {
+    const senses = cleanSenses(r.senses); if (!senses.length) return false;
+    if (i == null) {
+      const mine = F.alts(c.en); i = senses.findIndex(s => (!s.es || F.norm(s.es) === F.norm(c.es)) && F.alts(s.en).some(a => mine.includes(a)));
+      if (i < 0) { senses.unshift(cleanSense({ es: c.es, en: c.en, pos: c.pos, note: 'tu traducción', examples: c.example_es ? [{ es: c.example_es, en: c.example_en }] : [] })); i = 0; }
+    }
+    c.senses = senses; if (!c.grammarNote) c.grammarNote = r.grammarNote || '';
+    return F.setSense(c, i);
+  };
   F.due = () => F.cards.filter(c => c.nextReview <= Date.now());
   F.learned = () => F.cards.filter(c => c.box >= 5).length;
 
