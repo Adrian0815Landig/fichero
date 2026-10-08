@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#1F4FD8"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="Fichero"/>
+<link rel="manifest" href="manifest.webmanifest"/>
+<link rel="apple-touch-icon" href="apple-touch-icon.png"/>
+<link rel="icon" href="icon-192.png"/>
+<title>Fichero</title>
+<link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<div class="app">
+  <header class="top"><div><h1 id="title">Buscar</h1><div class="sub" id="sub"></div></div></header>
+  <main class="main" id="main">
+
+    <section class="view on" id="v-buscar">
+      <div class="seg" id="dir-seg">
+        <button data-d="es-en" class="on">Español → English</button>
+        <button data-d="en-es">English → Español</button>
+      </div>
+      <form class="field" id="q-form" autocomplete="off">
+        <input id="q" type="text" inputmode="text" enterkeyhint="search" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Palabra o frase" aria-label="Palabra o frase"/>
+        <button class="btn" type="submit" id="q-go">Buscar</button>
+      </form>
+      <div id="result"></div>
+      <div class="recent" id="recent"></div>
+    </section>
+
+    <section class="view" id="v-practicar">
+      <div class="stats" id="stats"></div>
+      <div class="seg" id="mode-seg">
+        <button data-m="flip" class="on">Tarjetas</button>
+        <button data-m="type">Escribir</button>
+      </div>
+      <div class="chips" id="dir-chips"></div>
+      <div class="bar"><i id="bar-i" style="width:0"></i></div>
+      <div class="stage" id="stage"></div>
+    </section>
+
+    <section class="view" id="v-tarjetas">
+      <div class="field"><input id="filter" type="search" placeholder="Buscar en mis tarjetas" aria-label="Filtrar"/></div>
+      <div class="chips" id="tag-chips"></div>
+      <div id="list"></div>
+    </section>
+
+    <section class="view" id="v-ajustes">
+      <div class="group"><h3>Importar vocabulario</h3>
+        <p class="hint">Pega la lista de clase. Una palabra por línea, con traducción (<i>casa - house</i>) o sin ella.</p>
+        <button class="btn block" id="open-import" style="margin-top:12px">Importar lista</button>
+      </div>
+      <div class="group"><h3>Apariencia</h3>
+        <div class="seg" id="theme-seg" style="margin-top:10px"><button data-t="auto">Auto</button><button data-t="light">Claro</button><button data-t="dark">Oscuro</button></div>
+      </div>
+      <div class="group"><h3>Traducción con Claude (opcional)</h3>
+        <p class="hint">Sin clave: diccionario gratuito (Wiktionary y MyMemory). Con clave de Anthropic: ejemplos y notas de gramática. La clave queda solo en este dispositivo.</p>
+        <div class="field"><input id="key" type="password" placeholder="sk-ant-…" autocomplete="off" autocapitalize="off" aria-label="Clave API"/><button class="btn ghost" id="key-save">Guardar</button></div>
+        <div class="hint" id="key-st" style="margin-top:8px"></div>
+      </div>
+      <div class="group"><h3>Copia de seguridad</h3>
+        <p class="hint" id="data-info"></p>
+        <div style="display:flex;gap:8px;margin-top:12px"><button class="btn ghost" style="flex:1" id="export">Exportar</button><button class="btn ghost" style="flex:1" id="import-file">Abrir copia</button></div>
+        <input type="file" id="file" accept="application/json,.json" hidden/>
+        <button class="btn bad block" id="wipe" style="margin-top:10px">Borrar todo</button>
+      </div>
+    </section>
+  </main>
+
+  <nav class="tabs" id="tabs" aria-label="Navegación">
+    <button class="tab on" data-v="buscar"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg>Buscar</button>
+    <button class="tab" data-v="practicar"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="3"/><path d="M8 10h8M8 14h5"/></svg>Practicar<span class="dot" id="due-dot"></span></button>
+    <button class="tab" data-v="tarjetas"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg>Tarjetas</button>
+    <button class="tab" data-v="ajustes"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M18.4 5.6l-1.8 1.8M7.4 16.6l-1.8 1.8"/></svg>Ajustes</button>
+  </nav>
+</div>
+
+<div class="sheet-bg" id="sheet-bg"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-h">
+  <h2 id="sheet-h">Importar lista</h2>
+  <p class="hint">Formatos: <i>palabra - traducción</i>, <i>palabra = traducción</i>, <i>palabra;traducción</i> o solo la palabra (se traduce sola). Opcional: una línea <i>#tema</i> asigna un tema a las siguientes.</p>
+  <textarea id="import-text" placeholder="#verbos reflexivos&#10;levantarse - to get up&#10;ducharse&#10;acostarse - to go to bed" spellcheck="false"></textarea>
+  <div id="import-status" class="hint"></div>
+  <div style="display:flex;gap:8px;margin-top:12px"><button class="btn ghost" style="flex:1" id="import-cancel">Cerrar</button><button class="btn" style="flex:2" id="import-go">Añadir</button></div>
+</div></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="core.js"></script>
+<script src="lookup.js"></script>
+<script src="practice.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
